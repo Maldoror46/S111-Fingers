@@ -30,14 +30,15 @@ scat+geom_point(aes(color=Sex),size=4, shape=18) + theme_classic()+
   theme(axis.title.y = element_text(),   legend.position = "top", plot.title=element_text(hjust=0.5, size=20))+
   labs(x="Age \\Years", y="Finger length \\cm", title = "Finger length against age") 
 
-hist<-ggplot(data=df,aes(x=Length, fill=Sex))
 
-hist + geom_histogram(bins =10, color="black")+
+hist<-ggplot(data=df,aes(x=Length, fill=Sex, color=Sex))
+
+hist + geom_histogram(bins =7, position="dodge", size = 1)+
   labs(x="Finger length \\cm", y="", title = "Finger length frequency by sex")+
   scale_fill_manual(values=colors)+
+  scale_color_manual(values=c("blue", "dark green"))+
   theme_classic()+
   theme(legend.position = "top", plot.title=element_text(hjust=0.5, size=20))
-
 
 correlation <- cor.test(df$Age,df$Length)
 

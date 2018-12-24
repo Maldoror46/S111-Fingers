@@ -63,11 +63,12 @@ kable(smry) %>%
 
 
 ```{r echo=FALSE, message=FALSE}
-hist<-ggplot(data=df,aes(x=Length, fill=Sex))
+hist<-ggplot(data=df,aes(x=Length, fill=Sex, color=Sex))
 
-hist + geom_histogram(bins =7, color="black", position="dodge")+
+hist + geom_histogram(bins =7, position="dodge", size = 0.6)+
   labs(x="Finger length \\cm", y="", title = "Finger length frequency by sex")+
   scale_fill_manual(values=colors)+
+  scale_color_manual(values=c("blue", "dark green"))+
   theme_classic()+
   theme(legend.position = "top", plot.title=element_text(hjust=0.5, size=20))
 
