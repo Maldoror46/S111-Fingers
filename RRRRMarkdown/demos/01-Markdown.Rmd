@@ -1,0 +1,7 @@
+# Say Hello
+To my little friend, markdown.  
+
+Markdown is 
+* _easy_ to use
+* __simple__
+* fun?

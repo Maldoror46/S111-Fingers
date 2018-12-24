@@ -1,0 +1,17 @@
+---
+bibliography: delays.bib
+csl: apa.csl
+---
+
+Set the `bibliography:` field to a filepath that leads from the .Rmd location to the bib file location.
+
+### Citations
+
+Blah blah [@wickham14].  
+@wickham14 says blah.  
+@wickham14 [p. 33] says blah.  
+Wickham says blah [-@wickham14].
+
+Note, you should add your own section header for the bibliography, R Markdown will only add the entries:
+
+### References

@@ -1,0 +1,8 @@
+---
+title: "Untitled"
+author: "RStudio"
+date: "February 4, 2015"
+output: html_document
+---
+
+Text of document

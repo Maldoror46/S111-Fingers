@@ -1,0 +1,18 @@
+---
+title: "Untitled"
+author: "RStudio"
+date: "February 4, 2015"
+output: html_document
+params:
+  num: 42
+  date: !r as.Date("2015-01-01")
+---
+
+The value of the parameter is 
+`r params$num`, e.g.
+
+```{r}
+params$num
+```
+
+Today is `r params$date`.

@@ -1,0 +1,123 @@
+
+---
+output:
+  html_document:
+    df_print: kable
+---
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# QUESTION: Which NYC airport has the longest delays for a given day of the week?
+
+# If you do nto have one or more of the packages used below, please install them
+# by connecting to the internet, opening an R session and running this command (without the #):
+# install.packages(c("nycflights13", "dplyr", "ggplot2", "lubridate"))
+library(nycflights13) # data
+library(dplyr)        # cleaning functions
+library(ggplot2)      # plotting functions
+library(lubridate)    # date-time processing
+library(kableExtra)
+
+# Make a new data frame named delays. Make it like this:
+#   take flights and then
+#   mutate it to create a new date variable
+#     and a new weekday variable, then
+#   select just the origin, date, weekday, and dep_delay columns, then
+#   filter out the rows where dep_delay equals NA
+delays <-
+  flights %>%
+  mutate(date = ymd(paste(year, month, day)), 
+         weekday = wday(date, label = TRUE, abbr = FALSE)) %>% 
+  select(origin, date, weekday, dep_delay) %>%
+  filter(!is.na(dep_delay)) 
+
+# MOTIVATION: Delays fluctuate throughout the year
+
+# Make a new data frame named year. Make it like this:
+#   take delays and then
+#   group its rows into unique combinations of origin and date, then 
+#   summarise the data by calculating the mean dep_delay for each group
+year <-
+  delays %>% 
+  group_by(origin, date) %>% 
+  summarise(mean_delay = mean(dep_delay))
+
+# METHOD: Choose a day of the week and aggregate delays by airport
+
+# Pick a day of the week
+dow <- "Saturday"
+
+# Make a new data frame named weekday. Make it like this:
+#   take delays and then
+#   filter out rows where weekday does not equal the day above, then
+#   group its rows by origin, then 
+#   summarise the data by calculating the mean dep_delay for each group
+weekday <- 
+  delays %>%
+  filter(weekday == dow) %>%
+  group_by(origin) %>%
+  summarise(mean_delay = mean(dep_delay))
+```
+
+
+
+## Goal
+
+Which airport near New York City has the shortest departure delays on Saturday?
+
+## Motivation
+
+Airline passengers have choices when they choose to fly in to or out of New York City. Three major airports serve the area:
+
+* **JFK** - John F Kennedy International Airport
+* **LGA** - LaGuardia Airport
+* **EWR** - Newark Liberty International Airport
+
+How should passengers choose which airport to depart from? This study compares the airports on an obvious criteria: _departure delays_, the amount of time that passes between when a plane is scheduled to depart and when it actually departs. The amount of delay varies by ariport and fluctuates throughout the year, as seen in the graph below.
+
+```{r echo=FALSE, message=FALSE}
+# Plot the mean departure delay over time by airport
+ggplot(year, aes(x = date, y = mean_delay, color = origin)) + 
+  geom_point(alpha = 0.2) +
+  geom_smooth(se = FALSE) +
+  ggtitle("Smoothed daily mean delays") + 
+  ylab("Mean delay (m)") + 
+  theme_bw()
+```
+
+
+Since passengers can normally plan which day of the week they travel on, we will condition our analysis on a single day of the week: Saturday.
+
+## Data
+
+We will examine all flights that originated from a New York City airport in 2013. The data is provided by the Bureau of Transportation Statistics (BTS) and is available for download from <http://www.transtats.bts.gov/DL_SelectFields.asp?Table_ID=236>.
+
+## Conclusion
+
+```{r echo=FALSE, message=FALSE}
+# Plot the mean delay by airport for the selected day of the week
+ggplot(weekday, aes(x = origin)) + 
+  geom_bar(aes(weight = mean_delay)) +
+  ggtitle(paste("Expected", dow, "departure delay", sep = " ")) + 
+  ylab("Mean delay (m)") +
+  xlab("")
+
+
+
+```
+
+   
+As the plot above shows, `r c("EWR" = "Newark", "JFK" = "JFK", "LGA" = "LaGuardia")[[weekday$origin[which.min(weekday$mean_delay)]]]` had the shortest mean departure delay on `r dow`, with a mean delay of `r round(min(weekday$mean_delay), 2)` minutes.
+
+The complete results are in the table below.
+
+```{r results="asis", echo=FALSE}
+kable(weekday) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+```
+
+```{r echo=FALSE}
+var.test(dep_delay~origin,delays, alternative="two.sided")
+```
+
+
