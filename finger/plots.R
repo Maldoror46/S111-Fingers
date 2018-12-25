@@ -33,12 +33,25 @@ scat+geom_point(aes(color=Sex),size=4, shape=18) + theme_classic()+
 
 hist<-ggplot(data=df,aes(x=Length, fill=Sex, color=Sex))
 
-hist + geom_histogram(bins =7, position="dodge", size = 1)+
+##hist with facets#
+hist + geom_histogram(bins =12, size = 1)+
   labs(x="Finger length \\cm", y="", title = "Finger length frequency by sex")+
   scale_fill_manual(values=colors)+
   scale_color_manual(values=c("blue", "dark green"))+
   theme_classic()+
-  theme(legend.position = "top", plot.title=element_text(hjust=0.5, size=20))
+  theme(legend.position = "top", plot.title=element_text(hjust=0.5, size=20))+
+  facet_grid(Sex ~.)
+
+## interleaved hist ##
+
+hist +
+  labs(x="Finger length \\cm", y="", title = "Finger length frequency by sex")+
+  scale_fill_manual(values=colors)+
+  scale_color_manual(values=c("blue", "dark green"))+
+  theme_classic()+
+  theme(legend.position = "top", plot.title=element_text(hjust=0.5, size=20))+
+  geom_histogram(bins =12, position = "dodge", size = 1)
+
 
 correlation <- cor.test(df$Age,df$Length)
 
