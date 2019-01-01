@@ -12,12 +12,12 @@ bp<-ggplot(data=df,aes(x=Sex,y=Length, fill=Sex))
 bp+geom_boxplot()+
   geom_jitter(width=0.2)+
   scale_fill_manual(values=colors)+
+  scale_color_manual(values=c("blue", "green"))+
   theme_classic()+
   theme(legend.position = "top", plot.title=element_text(hjust=0.5, size=20))+
   coord_flip()+
   labs(y="length \\cm", x=" ", title="Boxplot of finger length by sex")
     
-  
 
 scat<-ggplot(data=df,aes(y=Length, x=Age))  
 
