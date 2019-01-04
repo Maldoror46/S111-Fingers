@@ -1,5 +1,5 @@
 ---
-title: "Investigation of Finger Lengths by Sex"
+title: "Investigation of Sex as a Factor in Finger Length in Humans"
 output: html_document
 ---
 
@@ -21,21 +21,33 @@ smry<-
 
 correlation <- cor(df$Age,df$Length)
 
-num_men<-df %>% filter(Sex=="M")  %>% summarise(n())
-num_women<-df %>% filter(Sex=="F")  %>% summarise(n())
+num_men<-smry[2,2]
+num_women<-smry[1,2]
 
-colors<-c("#5d9cd6","#6ca844")
+mean_men<-smry[2,3]
+mean_women<-smry[1,3]
 
-bp<-ggplot(data=df, aes(x=Sex, y=Length, fill=Sex))
+sd_men<-smry[2,4]
+sd_women<-smry[1,4]
 
-scat<-ggplot(data=df,aes(y=Length, x=Age))  
+
+fill_colors<-c("#5d9cd6","#6ca844")
+line_colors<-c("#003399", "#006600")
+
+bp<-ggplot(data=df,aes(x=Sex,y=Length, fill=Sex, color=Sex))  
+
+scat<-ggplot(data=df,aes(y=Length, x=Age))
+
+hist<-ggplot(data=df,aes(x=Length, fill=Sex, color=Sex, y=..density..))
 
 
 ```
-##Mthodology
-We sampled  finger lengths of `r num_men` and `r num_women` aged between `r min(df$Age)` and `r max(df$Age)`
+##Methodology
+We sampled  finger lengths of `r num_men` males and `r num_women` females aged between `r min(df$Age)` and `r max(df$Age)`. Note. We have used biological sex at birth as the basis of categorisation
 
-Age might be considered a confounding factor. An initial exploration of the data shows little correlation between age and finger lenths with $R^2=$ `r round(correlation,3)` so we can dismiss this as a possible issue.  Without doing any rther anaylisis, the scatter graph appears to show a random distribution around the mean (indicated)
+Age might be considered a confounding factor. We have excluded people under 18 and over 65 from our study, the former for obvious reasons and the latter becauuse of the potential effect of the diseases of old age. An initial exploration of the data shows little correlation between age and finger lenths with $R^2=$ `r round(correlation,3)` so we can dismiss this as a possible issue.  Without doing any further anaylisis, the scatter graph appears to show a random distribution around the mean (indicated).
+
+
 
 ```{r echo=FALSE, message=FALSE}
 scat+geom_point(size=4, shape=18) + theme_classic()+
@@ -43,21 +55,26 @@ scat+geom_point(size=4, shape=18) + theme_classic()+
   #facet_grid(Sex ~ .)
   #geom_smooth(method="lm", se=FALSE, color="black", linetype="dashed")+
   geom_hline(yintercept = mean(df$Length), linetype="dashed", size=1)+
-  scale_color_manual(values=colors)+
+  scale_color_manual(values=fill_colors)+
   theme_classic()+
   theme(axis.title.y = element_text(),   legend.position = "top", plot.title=element_text(hjust=0.5, size=20))+
-  labs(x="Age \\Years", y="Finger length \\cm", title = "Finger length against age")+
+  labs(x="Age \\Years", y="Finger length \\mm", title = "Finger length against age")+
   annotate(geom = "text", x = 17, y =  mean(df$Length)+1, label = round(mean(df$Length),2))
 ```
 
-##Results
+Ethnicity is likely to be a confounding factor. Unfortunately, our sammple is not particlarly diverse so this is not likely to be an issue. 
+
+##Results  
+
 ```{r results="asis", echo=FALSE, message=FALSE}
 kable(smry) %>%
  kable_styling(position = "center")
 
 ```
-##
 ##  
+##  
+
+The mean length of finger in men was found to be `r mean_men` with standard deviation `r sd_men`.  For women the mean was `r mean_women` with sd `r sd_women`
     
 
 
@@ -65,44 +82,48 @@ kable(smry) %>%
 ```{r echo=FALSE, message=FALSE}
 
 #Interleaved hist
-
-hist<-ggplot(data=df,aes(x=Length, fill=Sex, color=Sex))
-
-hist + geom_histogram(bins =7, position="dodge", size = 0.6)+
-  labs(x="Finger length \\cm", y="", title = "Finger length frequency by sex")+
-  scale_fill_manual(values=colors)+
-  scale_color_manual(values=c("blue", "dark green"))+
+hist +
+  geom_histogram(binwidth =4, position = "dodge", size = 1)+
+  labs(x="Finger length \\mm", y="", title = "Finger length frequency by sex")+
+  scale_fill_manual(values=fill_colors)+
+  scale_color_manual(values=line_colors)+
   theme_classic()+
   theme(legend.position = "top", plot.title=element_text(hjust=0.5, size=20))
 
-bp<-ggplot(data=df,aes(x=Sex,y=Length, fill=Sex))  
 
 ```
-##
+
+
 
 ```{r echo=FALSE, message=FALSE}
-##hist with facets#
-hist + geom_histogram(bins =12, size = 1)+
-  labs(x="Finger length \\cm", y="", title = "Finger length frequency by sex")+
-  scale_fill_manual(values=colors)+
-  scale_color_manual(values=c("blue", "dark green"))+
+#hist with facets
+hist + 
+  geom_histogram(binwidth=4, size = 1)+
+  labs(x="Finger length \\mm", y="frequency", title = "Finger length frequency by sex")+
+  scale_fill_manual(values=fill_colors)+
+  scale_color_manual(values=line_colors)+
   theme_classic()+
+  geom_density(alpha=0.2, size=1)+
+  xlim(50,90)+
   theme(legend.position = "top", plot.title=element_text(hjust=0.5, size=20))+
   facet_grid(Sex ~.)
 ```
-##
+
+# 
 
 ```{r echo=FALSE, message=FALSE}
 bp+geom_boxplot()+
   geom_jitter(width=0.2)+
-  scale_fill_manual(values=colors)+
+  scale_fill_manual(values=fill_colors)+
+  scale_color_manual(values=line_colors)+
   theme_classic()+
   theme(legend.position = "top", plot.title=element_text(hjust=0.5, size=20))+
   coord_flip()+
-  labs(y="length \\cm", x=" ", title="Boxplot of finger length by sex")
+  labs(y="length \\mm", x=" ", title="Boxplot of finger length by sex")
 ```
 
-##
+#  
+***
     
 ```{r  echo=FALSE, message=FALSE, warning=FALSE}
 t.test(Length~Sex, data = df, var.equal=TRUE, mu=0)

@@ -7,12 +7,12 @@ df <- read_csv("ringData.csv")
 colors<-c("#5d9cd6","#6ca844")
 
 
-bp<-ggplot(data=df,aes(x=Sex,y=Length, fill=Sex))  
+bp<-ggplot(data=df,aes(x=Sex,y=Length, fill=Sex, color=Sex))  
 
 bp+geom_boxplot()+
   geom_jitter(width=0.2)+
   scale_fill_manual(values=colors)+
-  scale_color_manual(values=c("blue", "green"))+
+  scale_color_manual(values=c("#003399", "#006600"))+
   theme_classic()+
   theme(legend.position = "top", plot.title=element_text(hjust=0.5, size=20))+
   coord_flip()+
